@@ -37,7 +37,6 @@ dependencies = [
     "tqdm",
     "pqdm",
     "hyperactive",
-    "basicpy",
     "zarr>=3.0.10",
     "ome-zarr>=0.9.0",
     "napari",
@@ -62,6 +61,9 @@ gpu-cuda13 = [
 docs = [
     "sphinx>=6.0.0",
     "sphinx-rtd-theme>=1.0.0",
+]
+illumination = [
+    "basicpy",
 ]
 
 [project.scripts]
@@ -153,15 +155,6 @@ dev = [
     "pytest-cov>=4.0.0",
     "pytest-console-scripts",
     "pre-commit>=4.5.1",
-]
-
-[tool.uv]
-# basicpy 2.0.0 (latest) pins scipy<1.13, which transitively forces numpy<2.
-# Override that ceiling so we can use modern numpy/scipy. basicpy still works
-# at runtime against newer scipy in our usage.
-override-dependencies = [
-    "scipy",
-    "numpy",
 ]
 
 [tool.pytest.ini_options]

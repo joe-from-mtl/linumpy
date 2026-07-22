@@ -3,6 +3,8 @@ import pytest
 
 from linumpy.io.test_data import get_data
 
+pytest.importorskip("basicpy")
+
 
 def test_help(script_runner):
     ret = script_runner.run(["linum_fix_illumination_3d.py", "--help"])
