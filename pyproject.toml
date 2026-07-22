@@ -39,7 +39,10 @@ dependencies = [
     "pqdm",
     "hyperactive",
     "basicpy>=2.0.0,<2.1",
-    "linum-basic[viz]",
+    # linum-basic disabled: scipy conflict between basicpy<2.1 (scipy<1.13) and
+    # linum-basic/modernisation (scipy>=1.15) is unresolvable until linum-basic
+    # is cleaned up and its functions are ported to our own implementation.
+    # "linum-basic[viz]",
     "zarr>=3.2.0",
     "ome-zarr>=0.16.0",
     "napari",
@@ -98,7 +101,6 @@ docs = [
 "linum-assess-slice-quality" = "scripts.analysis.linum_assess_slice_quality:main"
 "linum-auto-exclude-slices" = "scripts.analysis.linum_auto_exclude_slices:main"
 "linum-axis-xyz-to-zyx" = "scripts.conversion.linum_axis_xyz_to_zyx:main"
-"linum-basic-preview" = "scripts.visualization.linum_basic_preview:main"
 "linum-benchmark-gpu" = "scripts.diagnostics.linum_benchmark_gpu:main"
 "linum-benchmark-kvikio-zarr" = "scripts.utils.linum_benchmark_kvikio_zarr:main"
 "linum-benchmark-n4-gpu" = "scripts.diagnostics.linum_benchmark_n4_gpu:main"
@@ -139,7 +141,6 @@ docs = [
 "linum-extract-pyramid-levels" = "scripts.conversion.linum_extract_pyramid_levels:main"
 "linum-fix-galvo-shift-zarr" = "scripts.conversion.linum_fix_galvo_shift_zarr:main"
 "linum-fix-illumination-3d" = "scripts.illumination.linum_fix_illumination_3d:main"
-"linum-fix-illumination-basic" = "scripts.illumination.linum_fix_illumination_basic:main"
 "linum-generate-mosaic-aips" = "scripts.mosaic.linum_generate_mosaic_aips:main"
 "linum-generate-pipeline-report" = "scripts.analysis.linum_generate_pipeline_report:main"
 "linum-generate-slice-config" = "scripts.analysis.linum_generate_slice_config:main"
@@ -166,7 +167,6 @@ docs = [
 "linum-stitch-3d-refined" = "scripts.stitching.linum_stitch_3d_refined:main"
 "linum-stitch-motor-only" = "scripts.diagnostics.linum_stitch_motor_only:main"
 "linum-suggest-params" = "scripts.diagnostics.linum_suggest_params:main"
-"linum-sweep-illumination" = "scripts.illumination.linum_sweep_illumination:main"
 "linum-view-oct-raw-tile" = "scripts.visualization.linum_view_oct_raw_tile:main"
 "linum-view-omezarr" = "scripts.visualization.linum_view_omezarr:main"
 "linum-view-zarr" = "scripts.visualization.linum_view_zarr:main"
@@ -185,12 +185,13 @@ dev = [
 ]
 
 [tool.uv]
-# BaSiCPy dependency hardening (INFRA-04,):
+# BaSiCPy dependency hardening:
 # - basicpy>=2.0.0,<2.1 and torch>=2.12.0,<2.13 are CI-validated ranges (see uv.lock).
 # - basicpy 2.0.0 declares scipy<1.13, which transitively caps numpy at 1.x.
 # - override-dependencies lifts that ceiling so uv resolves modern numpy/scipy
-#   (currently numpy 2.5.x, scipy 1.18.x) that work at runtime in our bias/illumination paths.
-# - linum-basic is sourced from the modernisation git branch ; uv.lock pins the rev.
+#   (currently numpy 2.5.x, scipy 1.18.x) that work at runtime.
+# - linum-basic is disabled (see comment in [project.dependencies]) until the
+#   scipy conflict is resolved upstream.
 constraint-dependencies = [
     "torch>=2.12.0,<2.13",
 ]
@@ -200,8 +201,8 @@ override-dependencies = [
 ]
 
 [tool.uv.sources]
-# linum-basic is not published on PyPI; resolve it from the lab repository.
-linum-basic = { git = "https://github.com/linum-uqam/Linum-BaSiC.git", branch = "modernisation" }
+# linum-basic is disabled — see [project.dependencies] comment.
+# linum-basic = { git = "https://github.com/linum-uqam/Linum-BaSiC.git", branch = "modernisation" }
 
 [tool.pytest.ini_options]
 filterwarnings = [
@@ -258,9 +259,6 @@ convention = "numpy"
 # These scripts must import linumpy.config.threads (or preload CUDA libs)
 # before any other imports, so E402 is unavoidable.
 "scripts/linum_fix_illumination_3d.py" = ["E402"]
-"scripts/linum_fix_illumination_basic.py" = ["E402"]
-"scripts/linum_basic_preview.py" = ["E402"]
-"scripts/linum_sweep_illumination.py" = ["E402"]
 "scripts/linum_normalize_intensities_per_slice.py" = ["E402"]
 "scripts/linum_correct_bias_field.py" = ["E402"]
 # Star imports are intentional re-exports in __init__.py
