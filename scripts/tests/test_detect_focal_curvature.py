@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 import pytest
 
-from linumpy.io.test_data import get_data
-
 pytest.importorskip("basicpy")
+
+from linumpy.io.test_data import get_data
 
 
 def test_help(script_runner):
